@@ -210,9 +210,10 @@ void HWCSession::GetCapabilities(struct hwc2_device *device, uint32_t *outCount,
   if (!outCount) {
     return;
   }
-  if (outCapabilities == NULL) {
-    *outCount = 0;
+  if (outCapabilities != nullptr && *outCount >= 1) {
+    outCapabilities[0] = HWC2_CAPABILITY_SKIP_CLIENT_COLOR_TRANSFORM;
   }
+  *outCount = 1;
 }
 
 template <typename PFN, typename T>
