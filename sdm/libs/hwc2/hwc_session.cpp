@@ -225,10 +225,11 @@ static hwc2_function_pointer_t AsFP(T function) {
 // HWC2 functions returned in GetFunction
 // Defined in the same order as in the HWC2 header
 
-static int32_t AcceptDisplayChanges(hwc2_device_t *device, hwc2_display_t display) {
+int32_t HWCSession::AcceptDisplayChanges(hwc2_device_t *device, hwc2_display_t display) {
   if (display >= HWC_NUM_DISPLAY_TYPES) {
     return  HWC2_ERROR_BAD_DISPLAY;
   }
+  SCOPE_LOCK(locker_);
   return HWCSession::CallDisplayFunction(device, display, &HWCDisplay::AcceptDisplayChanges);
 }
 
@@ -620,7 +621,7 @@ hwc2_function_pointer_t HWCSession::GetFunction(struct hwc2_device *device,
 
   switch (descriptor) {
     case HWC2::FunctionDescriptor::AcceptDisplayChanges:
-      return AsFP<HWC2_PFN_ACCEPT_DISPLAY_CHANGES>(AcceptDisplayChanges);
+      return AsFP<HWC2_PFN_ACCEPT_DISPLAY_CHANGES>(HWCSession::AcceptDisplayChanges);
     case HWC2::FunctionDescriptor::CreateLayer:
       return AsFP<HWC2_PFN_CREATE_LAYER>(CreateLayer);
     case HWC2::FunctionDescriptor::CreateVirtualDisplay:
